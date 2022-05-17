@@ -127,3 +127,18 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.web_app/idea/
+.web_app/vscode/
+web_app/node_modules/
+web_app/build/
+web_app/.DS_Store
+web_app/*.tgz
+web_app/my-app*
+web_app/template/src/__tests__/__snapshots__/
+web_app/lerna-debug.log
+web_app/npm-debug.log*
+web_app/yarn-debug.log*
+web_app/yarn-error.log*
+.web_app/changelog
+.web_app/npm/
