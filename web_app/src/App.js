@@ -63,8 +63,6 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-
           <h3>Upload your audio!</h3>
           <div>
             <input type="file" onChange={this.onFileChange} />
