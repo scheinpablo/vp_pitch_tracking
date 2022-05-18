@@ -17,6 +17,7 @@ class App extends Component {
     fileSampleRate: false,
     audioInstance: null,
     filePitches: [],
+    audioRef: React.createRef(),
   };
 
   onSetInstance = (instance) => {
@@ -36,10 +37,6 @@ class App extends Component {
 
   onFileCancel = () => {
     this.setState({ ...this.state, selectedFile: null, stage: "selecting" });
-  };
-  onFilePlay = () => {
-    this.state.audioInstance.play();
-    this.setState({ ...this.state, stage: "playing" });
   };
 
   onFileUpload = () => {
@@ -165,7 +162,7 @@ class App extends Component {
 
               <h3></h3>
               <audio
-                ref="audio_tag"
+                ref={this.state.audioRef}
                 autoPlay={false}
                 controls={true}
                 onTimeUpdate={this.getCurrDuration}
