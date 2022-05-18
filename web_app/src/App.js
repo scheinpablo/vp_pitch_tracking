@@ -2,23 +2,42 @@ import logo from "./logo.svg";
 import "./App.css";
 import { Piano, KeyboardShortcuts, MidiNumbers } from "react-piano";
 import "react-piano/dist/styles.css";
+import Button from "@mui/material/Button";
+import FileUpload from "react-material-file-upload";
 import axios from "axios";
 import React, { Component } from "react";
+import ReactLoading from "react-loading";
 class App extends Component {
   state = {
     // Initially, no file is selected
+    stage: "selecting", //selecting, uploaded, analyzing, playing
     selectedFile: null,
+    successResponse: false,
   };
 
   // On file select (from the pop up)
   onFileChange = (event) => {
     // Update the state
-    this.setState({ selectedFile: event.target.files[0] });
+    console.log(event[0]);
+    this.setState({ ...this.state, selectedFile: event[0], stage: "uploaded" });
   };
+
+  onFileCancel = () => {
+    this.setState({ ...this.state, selectedFile: null, stage: "selecting" });
+  };
+  onFilePlay = () => {
+    this.setState({ ...this.state, selectedFile: null, stage: "selecting" });
+  };
+
   onFileUpload = () => {
+    this.setState({ ...this.state, stage: "analyzing" });
     const formData = new FormData();
 
-    formData.append("file", this.state.selectedFile, this.state.selectedFile.name);
+    formData.append(
+      "file",
+      this.state.selectedFile,
+      this.state.selectedFile.name
+    );
 
     fetch("http://127.0.0.1:8000/uploadfile/", {
       method: "POST",
@@ -27,9 +46,15 @@ class App extends Component {
       .then((response) => response.json())
       .then((result) => {
         console.log("Success:", result);
+        this.setState({
+          ...this.state,
+          successResponse: true,
+          stage: "playing",
+        });
       })
       .catch((error) => {
         console.error("Error:", error);
+        this.setState({ ...this.state, stage: "selecting" });
       });
   };
   // Create an object of formData
@@ -63,24 +88,72 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h3>Upload your audio!</h3>
-          <div>
+          {/* <div>
             <input type="file" onChange={this.onFileChange} />
             <button onClick={this.onFileUpload}>Upload!</button>
-          </div>
+          </div> */}
+          {this.state.stage == "selecting" && (
+            <div>
+              <h3>Upload your audio!</h3>
+              <FileUpload onChange={this.onFileChange} />
+            </div>
+          )}
+
+          {this.state.stage == "uploaded" && (
+            <div>
+              <h3>File uploaded!</h3>
+
+              <div>{this.state.selectedFile.name}</div>
+
+              <h3></h3>
+              <Button variant="contained" onClick={this.onFileUpload}>
+                Analyze!
+              </Button>
+
+              <span> </span>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={this.onFileCancel}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+
           <h1></h1>
-          <div>
-            <Piano
-              noteRange={{ first: firstNote, last: lastNote }}
-              playNote={(midiNumber) => {
-                // Play a given note - see notes below
-              }}
-              stopNote={(midiNumber) => {
-                // Stop playing a given note - see notes below
-              }}
-              width={1500}
+          {this.state.stage == "analyzing" && (
+            <ReactLoading
+              type={"balls"}
+              color={"#ffffff"}
+              height={64}
+              width={100}
             />
-          </div>
+          )}
+          {this.state.successResponse && (
+            <div>
+              <h3>File analyzed!</h3>
+
+              <div>{this.state.selectedFile.name}</div>
+
+              <h3></h3>
+              <Button variant="contained" onClick={this.onFilePlay}>
+                Play
+              </Button>
+
+              <h3></h3>
+              <Piano
+                noteRange={{ first: firstNote, last: lastNote }}
+                playNote={(midiNumber) => {
+                  // Play a given note - see notes below
+                }}
+                stopNote={(midiNumber) => {
+                  // Stop playing a given note - see notes below
+                }}
+                width={1500}
+              />
+            </div>
+          )}
         </header>
       </div>
     );
