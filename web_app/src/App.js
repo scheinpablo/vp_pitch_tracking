@@ -7,26 +7,40 @@ import FileUpload from "react-material-file-upload";
 import axios from "axios";
 import React, { Component } from "react";
 import ReactLoading from "react-loading";
+import Audio from "react-audioplayer";
+
 class App extends Component {
   state = {
     // Initially, no file is selected
-    stage: "selecting", //selecting, uploaded, analyzing, playing
+    stage: "selecting", //selecting, uploaded, analyzing, readyToPlay, playing
     selectedFile: null,
     successResponse: false,
+    fileSampleRate: false,
+    audioInstance: null,
+    filePitches: [],
+  };
+
+  onSetInstance = (instance) => {
+    this.setState({ ...this.state, audioInstance: instance });
   };
 
   // On file select (from the pop up)
   onFileChange = (event) => {
     // Update the state
     console.log(event[0]);
-    this.setState({ ...this.state, selectedFile: event[0], stage: "uploaded" });
+    this.setState({
+      ...this.state,
+      selectedFile: event[0],
+      stage: "uploaded",
+    });
   };
 
   onFileCancel = () => {
     this.setState({ ...this.state, selectedFile: null, stage: "selecting" });
   };
   onFilePlay = () => {
-    this.setState({ ...this.state, selectedFile: null, stage: "selecting" });
+    this.state.audioInstance.play();
+    this.setState({ ...this.state, stage: "playing" });
   };
 
   onFileUpload = () => {
@@ -44,11 +58,15 @@ class App extends Component {
       body: formData,
     })
       .then((response) => response.json())
-      .then((result) => {
-        console.log("Success:", result);
+      .then((jsonRes) => {
+        let result = JSON.parse(jsonRes);
+        console.log(result);
+        console.log(result.pitches);
         this.setState({
           ...this.state,
           successResponse: true,
+          fileSampleRate: result["sample_rate"],
+          filePitches: result["pitches"],
           stage: "playing",
         });
       })
@@ -151,6 +169,24 @@ class App extends Component {
                   // Stop playing a given note - see notes below
                 }}
                 width={1500}
+              />
+            </div>
+          )}
+
+          {(this.state.stage == "readyToPlay" ||
+            this.state.stage == "playing") && (
+            <div>
+              <h3></h3>
+              <Audio
+                width={600}
+                height={400}
+                autoPlay={true}
+                playlist={[
+                  {
+                    name: this.state.selectedFile.name, // song name
+                    src: URL.createObjectURL(this.state.selectedFile), // song source address
+                  },
+                ]}
               />
             </div>
           )}

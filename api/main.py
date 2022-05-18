@@ -1,4 +1,5 @@
 from typing import Union
+import json
 
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -99,7 +100,17 @@ async def upload(file: UploadFile = File(...)):
                 ))
         print("end")
         clear_cache_dicts()
-        return {"message": f"Successfuly uploaded. pitches: {pitches}"}
+        # Data to be written
+        res = {
+            "message": "Successfuly uploaded",
+            "pitches": pitches,
+            "sample_rate": sample_rate
+        }
+
+        # Serializing json
+        json_object = json.dumps(res, indent=4)
+        print(json_object)
+        return json_object
 
     except Exception:
         return {"message": "There was an error uploading the file"}
