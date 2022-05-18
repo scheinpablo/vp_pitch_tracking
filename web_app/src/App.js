@@ -7,7 +7,6 @@ import FileUpload from "react-material-file-upload";
 import axios from "axios";
 import React, { Component } from "react";
 import ReactLoading from "react-loading";
-import Audio from "react-audioplayer";
 
 class App extends Component {
   state = {
@@ -100,6 +99,16 @@ class App extends Component {
     }
   };
 
+  getCurrDuration = (e) => {
+    const percent = (
+      (e.currentTarget.currentTime / e.currentTarget.duration) *
+      100
+    ).toFixed(2);
+
+    const time = e.currentTarget.currentTime;
+    console.log(time.toFixed(2));
+  };
+
   render() {
     const firstNote = MidiNumbers.fromNote("a0");
     const lastNote = MidiNumbers.fromNote("G9");
@@ -155,9 +164,13 @@ class App extends Component {
               <div>{this.state.selectedFile.name}</div>
 
               <h3></h3>
-              <Button variant="contained" onClick={this.onFilePlay}>
-                Play
-              </Button>
+              <audio
+                ref="audio_tag"
+                autoPlay={false}
+                controls={true}
+                onTimeUpdate={this.getCurrDuration}
+                src={URL.createObjectURL(this.state.selectedFile)}
+              />
 
               <h3></h3>
               <Piano
@@ -174,22 +187,7 @@ class App extends Component {
           )}
 
           {(this.state.stage == "readyToPlay" ||
-            this.state.stage == "playing") && (
-            <div>
-              <h3></h3>
-              <Audio
-                width={600}
-                height={400}
-                autoPlay={true}
-                playlist={[
-                  {
-                    name: this.state.selectedFile.name, // song name
-                    src: URL.createObjectURL(this.state.selectedFile), // song source address
-                  },
-                ]}
-              />
-            </div>
-          )}
+            this.state.stage == "playing") && <div></div>}
         </header>
       </div>
     );
