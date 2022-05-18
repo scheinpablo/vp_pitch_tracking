@@ -2,193 +2,73 @@ import logo from "./logo.svg";
 import "./App.css";
 import { Piano, KeyboardShortcuts, MidiNumbers } from "react-piano";
 import "react-piano/dist/styles.css";
-import Button from "@mui/material/Button";
-import FileUpload from "react-material-file-upload";
-import axios from "axios";
-import React, { Component } from "react";
-import ReactLoading from "react-loading";
 
-class App extends Component {
-  state = {
-    // Initially, no file is selected
-    stage: "selecting", //selecting, uploaded, analyzing, readyToPlay, playing
-    selectedFile: null,
-    successResponse: false,
-    fileSampleRate: false,
-    audioInstance: null,
-    filePitches: [],
-    audioRef: React.createRef(),
-  };
+import React, { useState, useRef, useEffect } from "react";
 
-  onSetInstance = (instance) => {
-    this.setState({ ...this.state, audioInstance: instance });
-  };
+import { useSelector } from "react-redux";
+import frequencyToMidiNoteNumber from "frequency-to-midi-note-number";
 
+import FileSelection from "./components/FileSelection";
+import FilePreview from "./components/FilePreview";
+import AudioComponent from "./components/AudioComponent";
+import PianoComponent from "./components/PianoComponent";
+import LoadingComponent from "./components/LoadingComponent";
+
+const App = () => {
+  const selectedFileName = useSelector((state) => state.file.selectedFileName);
+  const stage = useSelector((state) => state.stage.stage);
+  const successResponse = useSelector((state) => state.file.successResponse);
+  // const [currentPitchIndex, setCurrentPitchIndex] = useState(null);
+  let currentPitchIndex = 0;
   // On file select (from the pop up)
-  onFileChange = (event) => {
-    // Update the state
-    console.log(event[0]);
-    this.setState({
-      ...this.state,
-      selectedFile: event[0],
-      stage: "uploaded",
-    });
-  };
 
-  onFileCancel = () => {
-    this.setState({ ...this.state, selectedFile: null, stage: "selecting" });
-  };
-
-  onFileUpload = () => {
-    this.setState({ ...this.state, stage: "analyzing" });
-    const formData = new FormData();
-
-    formData.append(
-      "file",
-      this.state.selectedFile,
-      this.state.selectedFile.name
-    );
-
-    fetch("http://127.0.0.1:8000/uploadfile/", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((jsonRes) => {
-        let result = JSON.parse(jsonRes);
-        console.log(result);
-        console.log(result.pitches);
-        this.setState({
-          ...this.state,
-          successResponse: true,
-          fileSampleRate: result["sample_rate"],
-          filePitches: result["pitches"],
-          stage: "playing",
-        });
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        this.setState({ ...this.state, stage: "selecting" });
-      });
-  };
-  // Create an object of formData
-
-  fileData = () => {
-    if (this.state.selectedFile) {
-      return (
-        <div>
-          <h2>File Details:</h2>
-          <p>File Name: {this.state.selectedFile.name}</p>
-          <p>File Type: {this.state.selectedFile.type}</p>
-          <p>
-            Last Modified:{" "}
-            {this.state.selectedFile.lastModifiedDate.toDateString()}
-          </p>
-        </div>
+  /*   const getCurrDuration = () => {
+    console.log(fileWindowTime);
+    console.log(playerTime);
+    if (playerTime >= currentPitchIndex * fileWindowTime) {
+      console.log(
+        "frec",
+        frequencyToMidiNoteNumber(filePitches[currentPitchIndex])
       );
-    } else {
-      return (
-        <div>
-          <br />
-          <h4>Choose before Pressing the Upload button</h4>
-        </div>
-      );
+      if (currentPitchIndex + 1 < filePitches.length) {
+        currentPitchIndex++;
+      } else {
+        currentPitchIndex = 0;
+      }
     }
-  };
-
-  getCurrDuration = (e) => {
-    const percent = (
-      (e.currentTarget.currentTime / e.currentTarget.duration) *
-      100
-    ).toFixed(2);
-
-    const time = e.currentTarget.currentTime;
-    console.log(time.toFixed(2));
-  };
-
-  render() {
-    const firstNote = MidiNumbers.fromNote("a0");
-    const lastNote = MidiNumbers.fromNote("G9");
-    return (
-      <div className="App">
-        <header className="App-header">
-          {/* <div>
+  }; */
+  console.log(stage);
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>{stage}</h1>
+        {/* <div>
             <input type="file" onChange={this.onFileChange} />
             <button onClick={this.onFileUpload}>Upload!</button>
           </div> */}
-          {this.state.stage == "selecting" && (
-            <div>
-              <h3>Upload your audio!</h3>
-              <FileUpload onChange={this.onFileChange} />
-            </div>
-          )}
 
-          {this.state.stage == "uploaded" && (
-            <div>
-              <h3>File uploaded!</h3>
+        {stage == "selecting" && <FileSelection />}
+        {stage == "uploaded" && <FilePreview />}
+        <h1></h1>
+        {stage == "analyzing" && <LoadingComponent />}
+        {successResponse && (
+          <div>
+            <h3>File analyzed!</h3>
 
-              <div>{this.state.selectedFile.name}</div>
+            <div>{selectedFileName}</div>
 
-              <h3></h3>
-              <Button variant="contained" onClick={this.onFileUpload}>
-                Analyze!
-              </Button>
+            <h3></h3>
+            <AudioComponent />
 
-              <span> </span>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={this.onFileCancel}
-              >
-                Cancel
-              </Button>
-            </div>
-          )}
+            <h3></h3>
+            <PianoComponent />
+          </div>
+        )}
 
-          <h1></h1>
-          {this.state.stage == "analyzing" && (
-            <ReactLoading
-              type={"balls"}
-              color={"#ffffff"}
-              height={64}
-              width={100}
-            />
-          )}
-          {this.state.successResponse && (
-            <div>
-              <h3>File analyzed!</h3>
-
-              <div>{this.state.selectedFile.name}</div>
-
-              <h3></h3>
-              <audio
-                ref={this.state.audioRef}
-                autoPlay={false}
-                controls={true}
-                onTimeUpdate={this.getCurrDuration}
-                src={URL.createObjectURL(this.state.selectedFile)}
-              />
-
-              <h3></h3>
-              <Piano
-                noteRange={{ first: firstNote, last: lastNote }}
-                playNote={(midiNumber) => {
-                  // Play a given note - see notes below
-                }}
-                stopNote={(midiNumber) => {
-                  // Stop playing a given note - see notes below
-                }}
-                width={1500}
-              />
-            </div>
-          )}
-
-          {(this.state.stage == "readyToPlay" ||
-            this.state.stage == "playing") && <div></div>}
-        </header>
-      </div>
-    );
-  }
-}
+        {(stage == "readyToPlay" || stage == "playing") && <div></div>}
+      </header>
+    </div>
+  );
+};
 
 export default App;

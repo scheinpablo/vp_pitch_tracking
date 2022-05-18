@@ -90,7 +90,8 @@ async def upload(file: UploadFile = File(...)):
         res = {
             "message": "Successfuly uploaded",
             "pitches": pitches,
-            "sample_rate": sample_rate
+            "sample_rate": sample_rate,
+            "window_size": window_size
         }
 
         # Serializing json
