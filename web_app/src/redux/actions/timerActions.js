@@ -6,6 +6,13 @@ export const updateTimer = (deltaTime) => {
     payload: { deltaTime },
   };
 };
+export const SET_TIMER = "SET_TIMER";
+export const setTimer = (newTime) => {
+  return {
+    type: SET_TIMER,
+    payload: { newTime },
+  };
+};
 
 export const START_TIMER = "START_TIMER";
 

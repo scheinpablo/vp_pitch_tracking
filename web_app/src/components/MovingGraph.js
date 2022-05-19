@@ -1,50 +1,69 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useState } from "react-redux";
 import CanvasJSReact from "./canvasjs.react";
-
+var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 import { store } from "../index";
+
+const initialIndex = 75;
+var index = initialIndex;
 var dps = []; //dataPoints.
-var xVal = dps.length + 1;
-var yVal = 15;
-var updateInterval = 1000;
+var updateInterval = 50;
 export default class MovingGraph extends React.Component {
   constructor() {
     super();
     this.updateChart = this.updateChart.bind(this);
+    this.initDsp();
+  }
 
-    this.state = {
-      filePitches: [],
-    };
+  initDsp() {
+    index = initialIndex;
+    console.log("init dsp");
+    let a = store.getState().file.filePitches;
+    dps = a.slice(0, initialIndex).map((val, i) => {
+      return {
+        x: i,
+        y: val,
+      };
+    });
   }
 
   componentDidMount() {
     setInterval(this.updateChart, updateInterval);
-    store.subscribe(() => {
-      this.setState({
-        filePitches: store.getState().file.filePitches,
-      });
-    });
   }
   updateChart() {
-    yVal = yVal + Math.round(5 + Math.random() * (-5 - 5));
-    //this.state.filePitches.push({ x: xVal, y: yVal });
-    xVal++;
-    if (this.state.filePitches.length > 10) {
-      this.state.filePitches.shift();
+    if (
+      store.getState().timer.isRunning &&
+      index < store.getState().file.filePitches.length
+    ) {
+      dps.push({ x: index, y: store.getState().file.filePitches[index] });
+      index++;
+      if (dps.length > 75) {
+        //dps.shift();
+        dps.shift();
+      }
+      this.chart.render();
     }
-    this.chart.render();
+    /* if (index == store.getState().file.filePitches.length) {
+      this.initDsp();
+      this.chart.render();
+    } */
   }
   render() {
     const options = {
+      axisY: {
+        minimum: 80,
+        maximum: 700,
+        interval: 100,
+      },
       title: {
         text: "Dynamic Line Chart",
       },
       data: [
         {
-          type: "line",
-          dataPoints: this.state.filePitches,
+          type: "splineArea",
+          dataPoints: dps,
         },
       ],
     };

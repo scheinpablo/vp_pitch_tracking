@@ -9,6 +9,11 @@ const timerReducer = (state = { isRunning: false, time: 0 }, action) => {
       } else {
         return state;
       }
+    case "SET_TIMER":
+      return {
+        ...state,
+        time: action.payload.newTime,
+      };
 
     case "START_TIMER":
       return {
