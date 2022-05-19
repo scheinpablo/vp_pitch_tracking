@@ -3,7 +3,7 @@ import {
   updateTimer,
   pauseTimer,
   startTimer,
-  resetTimer
+  resetTimer,
 } from "../redux/actions/timerActions";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -17,8 +17,12 @@ const AudioComponent = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (isRunning) dispatch(updateTimer(10));
-    }, 10);
+      if (isRunning)
+        dispatch({
+          type: "UPDATE_TIMER",
+          payload: { deltaTime: 25 },
+        });
+    }, 25);
     return () => clearInterval(interval);
   }, [isRunning]);
 

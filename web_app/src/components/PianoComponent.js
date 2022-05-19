@@ -24,12 +24,7 @@ const PianoComponent = () => {
   }, [playerTime]);
 
   const getCurrDuration = () => {
-    console.log(playerTime);
-    if (playerTime / 1000 >= currentPitchIndex * fileWindowTime) {
-      console.log(
-        "frec",
-        frequencyToMidiNoteNumber(filePitches[currentPitchIndex])
-      );
+    if (playerTime >= currentPitchIndex * fileWindowTime) {
       if (currentPitchIndex + 1 < filePitches.length) {
         dispatch(updatePitchIndex());
       } else {
@@ -37,22 +32,17 @@ const PianoComponent = () => {
       }
     }
   };
-
+  let midi = frequencyToMidiNoteNumber(filePitches[currentPitchIndex]);
   return (
     <div>
       <h2>freq: {filePitches[currentPitchIndex].toFixed(2)}Hz</h2>
-      <h2>note: {frequencyToMidiNoteNumber(filePitches[currentPitchIndex])}</h2>
+      <h2>note: {midi}</h2>
       <Piano
         noteRange={{
           first: MidiNumbers.fromNote("a0"),
-          last: MidiNumbers.fromNote("G9"),
+          last: MidiNumbers.fromNote("F5"),
         }}
-        activeNotes={
-          isRunning &&
-          frequencyToMidiNoteNumber(filePitches[currentPitchIndex]) > 0
-            ? [frequencyToMidiNoteNumber(filePitches[currentPitchIndex])]
-            : []
-        }
+        activeNotes={isRunning && midi > 0 ? [midi] : []}
         playNote={(midiNumber) => {
           // Play a given note - see notes below
         }}

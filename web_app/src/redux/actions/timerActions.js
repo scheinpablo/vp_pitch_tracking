@@ -1,7 +1,6 @@
 export const UPDATE_TIMER = "UPDATE_TIMER";
 
 export const updateTimer = (deltaTime) => {
-  console.log("updateTimer");
   return {
     type: UPDATE_TIMER,
     payload: { deltaTime },

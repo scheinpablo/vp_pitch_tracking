@@ -10,7 +10,6 @@ const LoadingComponent = () => {
 
   useEffect(() => {
     const formData = new FormData();
-    console.log(selectedFile);
     let file = dataURLtoFile(selectedFile, selectedFileName);
     console.log("file:  ", file);
     formData.append("file", file, selectedFileName);
@@ -21,12 +20,10 @@ const LoadingComponent = () => {
       .then((response) => response.json())
       .then((jsonRes) => {
         let result = JSON.parse(jsonRes);
-        console.log(result);
-        console.log(result.pitches);
 
         dispatch(
           analyzedFile(
-            result["window_size"] / result["sample_rate"],
+            result["window_ms"],
             result["pitches"],
             true
           )
