@@ -8,7 +8,7 @@ import FilePreview from "./components/FilePreview";
 import AudioComponent from "./components/AudioComponent";
 import PianoComponent from "./components/PianoComponent";
 import LoadingComponent from "./components/LoadingComponent";
-import MovingGraph from "./components/MovingGraph";
+import MovingGraph2 from "./components/MovingGraph2";
 
 const App = () => {
   const selectedFileName = useSelector((state) => state.file.selectedFileName);
@@ -37,7 +37,7 @@ const App = () => {
 
             <h3></h3>
 
-            {/*   <MovingGraph /> */}
+            <MovingGraph2 />
           </div>
         )}
       </header>

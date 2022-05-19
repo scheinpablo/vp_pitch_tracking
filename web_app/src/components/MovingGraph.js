@@ -6,7 +6,7 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 import { store } from "../index";
 
-const initialIndex = 75;
+const initialIndex = 50;
 var index = initialIndex;
 var dps = []; //dataPoints.
 var updateInterval = 50;
@@ -39,7 +39,7 @@ export default class MovingGraph extends React.Component {
     ) {
       dps.push({ x: index, y: store.getState().file.filePitches[index] });
       index++;
-      if (dps.length > 75) {
+      if (dps.length > 50) {
         //dps.shift();
         dps.shift();
       }

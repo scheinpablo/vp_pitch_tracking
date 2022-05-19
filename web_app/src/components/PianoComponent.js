@@ -15,7 +15,12 @@ const PianoComponent = (props) => {
 
   return (
     <div>
-      <h2>freq: {currentPitch != 1 ? currentPitch.toFixed(2) + "Hz" : "-"}</h2>
+      <h2>
+        freq:{" "}
+        {currentPitch != undefined && currentPitch != 1
+          ? currentPitch.toFixed(2) + "Hz"
+          : "-"}
+      </h2>
       <h2>note: {midi > 0 ? midi : "-"}</h2>
       <Piano
         noteRange={{
