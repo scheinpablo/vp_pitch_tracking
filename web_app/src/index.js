@@ -9,10 +9,9 @@ import reportWebVitals from "./reportWebVitals";
 import { configureStore } from "@reduxjs/toolkit";
 import { getDefaultMiddleware } from "@reduxjs/toolkit";
 
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-let store = configureStore({
+export let store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

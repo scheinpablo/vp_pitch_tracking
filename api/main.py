@@ -82,7 +82,7 @@ def optimized_calculaitons(f, W, t, sample_rate, bounds, th=0.1, p_energy=0, p_f
     return sample_rate/sample, curr_energy
 
 
-def fast_pitch_detection(file, min_freq=20, max_freq=700, window_ms=25, overlap=0, normalize=False):
+def fast_pitch_detection(file, min_freq=80, max_freq=700, window_ms=25, overlap=0, normalize=False):
     sample_rate, data = wavfile.read(file)
     data = data.astype(np.float64)
 

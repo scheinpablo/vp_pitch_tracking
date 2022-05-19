@@ -17,11 +17,7 @@ const AudioComponent = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (isRunning)
-        dispatch({
-          type: "UPDATE_TIMER",
-          payload: { deltaTime: 25 },
-        });
+      if (isRunning) dispatch(updateTimer(25));
     }, 25);
     return () => clearInterval(interval);
   }, [isRunning]);

@@ -35,8 +35,13 @@ const PianoComponent = () => {
   let midi = frequencyToMidiNoteNumber(filePitches[currentPitchIndex]);
   return (
     <div>
-      <h2>freq: {filePitches[currentPitchIndex].toFixed(2)}Hz</h2>
-      <h2>note: {midi}</h2>
+      <h2>
+        freq:{" "}
+        {filePitches[currentPitchIndex] != 1
+          ? filePitches[currentPitchIndex].toFixed(2) + "Hz"
+          : "-"}
+      </h2>
+      <h2>note: {midi > 0 ? midi : "-"}</h2>
       <Piano
         noteRange={{
           first: MidiNumbers.fromNote("a0"),
