@@ -4,7 +4,7 @@ const timerReducer = (state = { isRunning: false, time: 0 }, action) => {
       if (state.isRunning) {
         return {
           ...state,
-          time: (state.time += action.payload.deltaTime),
+          time: state.time + action.payload.deltaTime,
         };
       } else {
         return state;
@@ -27,7 +27,7 @@ const timerReducer = (state = { isRunning: false, time: 0 }, action) => {
         isRunning: false,
         time: 0,
       };
-    case "RESET_TIMER":
+    case "RESET":
       return {
         ...state,
         time: 0,

@@ -36,7 +36,7 @@ const LoadingComponent = () => {
         dispatch(analyzedFile(null, null, false));
         console.error("Error:", error);
       });
-  }, []); // Solo se vuelve a ejecutar si count cambia
+  }, []); 
 
   return (
     <ReactLoading type={"balls"} color={"#ffffff"} height={64} width={100} />

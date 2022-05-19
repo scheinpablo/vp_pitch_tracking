@@ -1,9 +1,10 @@
 const stageReducer = (state = { stage: "selecting" }, action) => {
   switch (action.type) {
     case "SELECT_FILE": {
-      return Object.assign({}, state, {
+      return {
+        ...state,
         stage: "uploaded",
-      });
+      };
     }
     case "ANALYZE_FILE":
       return {

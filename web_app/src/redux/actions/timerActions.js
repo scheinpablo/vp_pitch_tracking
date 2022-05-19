@@ -1,6 +1,7 @@
 export const UPDATE_TIMER = "UPDATE_TIMER";
 
 export const updateTimer = (deltaTime) => {
+  console.log("updateTimer");
   return {
     type: UPDATE_TIMER,
     payload: { deltaTime },
@@ -10,6 +11,7 @@ export const updateTimer = (deltaTime) => {
 export const START_TIMER = "START_TIMER";
 
 export const startTimer = () => {
+  console.log("startTimer");
   return {
     type: START_TIMER,
   };
@@ -28,7 +30,7 @@ export const stopTimer = () => {
     type: STOP_TIMER,
   };
 };
-export const RESET_TIMER = "RESET_TIMER";
+export const RESET_TIMER = "RESET";
 export const resetTimer = () => {
   return {
     type: RESET_TIMER,

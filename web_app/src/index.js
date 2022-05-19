@@ -8,7 +8,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { configureStore } from "@reduxjs/toolkit";
 import { getDefaultMiddleware } from "@reduxjs/toolkit";
-import { updateTimer } from "./redux/actions/timerActions";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -16,14 +16,6 @@ let store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
-
-let lastUpdateTime = Date.now();
-setInterval(() => {
-  const now = Date.now();
-  const deltaTime = now - lastUpdateTime;
-  lastUpdateTime = now;
-  //store.dispatch(updateTimer(deltaTime));
-}, 50);
 
 root.render(
   <React.StrictMode>
