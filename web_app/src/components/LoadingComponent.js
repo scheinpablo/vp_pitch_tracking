@@ -13,7 +13,7 @@ const LoadingComponent = () => {
     let file = dataURLtoFile(selectedFile, selectedFileName);
     console.log("file:  ", file);
     formData.append("file", file, selectedFileName);
-    fetch("http://127.0.0.1:8000/uploadfile/", {
+    fetch("http://127.0.0.1:8000/getFilePitches/", {
       method: "POST",
       body: formData,
     })

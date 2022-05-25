@@ -6,8 +6,41 @@ from fastapi.middleware.cors import CORSMiddleware
 import scipy.signal as ss
 import numpy as np
 from scipy.io import wavfile
+from fastapi.openapi.utils import get_openapi
+from typing import List
+from pydantic import BaseModel, Field
+
+
+def my_schema():
+    DOCS_TITLE = "Pitch Detection API"
+    DOCS_VERSION = "1.0"
+    openapi_schema = get_openapi(
+        title=DOCS_TITLE,
+        version=DOCS_VERSION,
+        routes=app.routes,
+    )
+    openapi_schema["info"] = {
+        "title": DOCS_TITLE,
+        "version": DOCS_VERSION,
+        "description": "Analyze the pitches of your audios!",
+        # "termsOfService": "http://programming-languages.com/terms/",
+        "contact": {
+            "name": "Get Help with this API",
+            "url": "http://www.programming-languages.com/help",
+            "email": "support@programming-languages.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+    }
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
 
 app = FastAPI()
+app.openapi = my_schema
+
 
 origins = [
     "http://localhost",
@@ -24,12 +57,12 @@ app.add_middleware(
 )
 
 
-def optimized_calculaitons(f, W, t, sample_rate, bounds, th=0.1, p_energy=0, p_freq=1):
+def optimized_calculations(f, W, t, sample_rate, bounds, th=0.1, p_energy=0, p_freq=1):
     energy_array = np.array(f[t:t+W+bounds[1]+1] *
                             f[t:t+W+bounds[1]+1], dtype=float).cumsum()
     energy_2_array = (energy_array[W:W+bounds[1]+1] -
                       energy_array[:bounds[1]+1]).cumsum()
-    #autocorrelation = np.array([np.sum(f[t: t+W] * f[t+i:i+t+W]) for i in range(bounds[1]+1)])
+    # autocorrelation = np.array([np.sum(f[t: t+W] * f[t+i:i+t+W]) for i in range(bounds[1]+1)])
     correlation = ss.correlate(
         f[t: t+W], f[t: t+W+bounds[1]], mode='full', method='fft')
     autocorrelation = correlation[:-W][::-1][:bounds[1]+1]
@@ -77,7 +110,7 @@ def optimized_calculaitons(f, W, t, sample_rate, bounds, th=0.1, p_energy=0, p_f
                 break
 
     if sample is None:
-        #posible = np.argmin(CMNDF_vals)+bounds[0]
+        # posible = np.argmin(CMNDF_vals)+bounds[0]
         sample = sample_rate  # if no_speach else posible # Absolute min
     return sample_rate/sample, curr_energy
 
@@ -101,13 +134,51 @@ def fast_pitch_detection(file, min_freq=80, max_freq=700, window_ms=25, overlap=
     pitches = [0]
     energy = 0
     for i in range((data.shape[0]-max_bound) // (window_size*(1-overlap))):
-        p, energy = optimized_calculaitons(data, window_size, int(
+        p, energy = optimized_calculations(data, window_size, int(
             i*window_size/(1-overlap)), sample_rate, bounds, 0.15, p_energy=energy, p_freq=pitches[-1])
         pitches.append(p)
     return pitches, window_ms
 
 
-@app.post("/uploadfile")
+class SuccessfulResponse(BaseModel):
+    pitches: List[float] = Field(
+        title='List of pitches',
+        description='List of pitches in Hz.'
+    )
+    window_ms: float = Field(
+        title='Window size',
+        description='Indicates the period of time in milliseconds by which a new pitch is calculated.'
+    )
+    message: str = Field(
+        title='Response message',
+    )
+
+
+@app.post("/getFilePitches", summary="Returns the pitches array of an audio file", tags=["Audio"],
+          response_model=SuccessfulResponse, responses={
+    200: {
+        "description": "Success",
+        "content": {
+            "application/json": {
+                "example": {
+                    "pitches": [
+                        40.56, 30.21, 60.78, 62.24,
+
+                    ],
+                    "window_ms": 25, "message": "Successfuly uploaded"
+                }
+            }
+        },
+    },
+    422: {
+        "description": "Error",
+        "content": {
+            "application/json": {
+                "example": {"message": "There was an error uploading the file."}
+            }
+        },
+    },
+},)
 async def upload(file: UploadFile = File(...)):
     try:
         pitches, window_ms = fast_pitch_detection(file.file)
@@ -121,9 +192,9 @@ async def upload(file: UploadFile = File(...)):
         }
 
         # Serializing json
-        json_object = json.dumps(res, indent=4)
-        print(json_object)
-        return json_object
+        #json_object = json.dumps(res, indent=4)
+        #print(json_object)
+        return res
 
     except Exception:
         return {"message": "There was an error uploading the file"}
