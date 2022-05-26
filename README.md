@@ -9,9 +9,7 @@ Video explicativo: https://www.youtube.com/watch?v=e1YCz0tNGB0
 
 Algoritmo de YIN: http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf
 
-## Ejecución web app
-
-#### 1. Ejecución API
+#### Ejecución API
 
 ```
 cd api
@@ -20,10 +18,14 @@ uvicorn main:app --reload
 ```
 
 La API se ejecuta en el puerto 8000.
-#### 2. Ejecución Web App
 
-1. Abrir una nueva terminal
-2. 
+Acceder mediante un navegador a http://localhost:8000/docs.
+#### Ejecución Web App
+
+Requisito: Ejecutar previamente la API.
+
+Abrir una nueva terminal
+
 
 ```
     cd web_app
@@ -31,7 +33,7 @@ La API se ejecuta en el puerto 8000.
     yarn install
     npm start
 ```
-La Web App se ejecuta en el puerto 3000
+La Web App se ejecuta en el puerto 3000.
 
-3. Acceder mediante un navegador a http://localhost:3000.
+Acceder mediante un navegador a http://localhost:3000.
 
