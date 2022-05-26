@@ -1,9 +1,13 @@
 # Pitch Tracking
-Materia: Procesamiento de Voz
+Materia: 22.47 Procesamiento de Voz
 
 Autores: Santiago Arribere y Pablo Scheinfeld
 
 Instituto Tecnológico de Buenos Aires
+
+Video explicativo: https://www.youtube.com/watch?v=e1YCz0tNGB0
+
+Algoritmo de YIN: http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf
 
 ## Ejecución web app
 
@@ -29,5 +33,5 @@ La API se ejecuta en el puerto 8000.
 ```
 La Web App se ejecuta en el puerto 3000
 
-3. Acceder mediante un navegador a http://localhost:3000
+3. Acceder mediante un navegador a http://localhost:3000.
 
