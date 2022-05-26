@@ -17,23 +17,20 @@ const LoadingComponent = () => {
       method: "POST",
       body: formData,
     })
-      .then((response) => response.json())
+      .then((response) => {
+        return response.json();
+      })
       .then((jsonRes) => {
-        let result = JSON.parse(jsonRes);
+        console.log(jsonRes);
+        let result = jsonRes;
 
-        dispatch(
-          analyzedFile(
-            result["window_ms"],
-            result["pitches"],
-            true
-          )
-        );
+        dispatch(analyzedFile(result["window_ms"], result["pitches"], true));
       })
       .catch((error) => {
         dispatch(analyzedFile(null, null, false));
         console.error("Error:", error);
       });
-  }, []); 
+  }, []);
 
   return (
     <ReactLoading type={"balls"} color={"#ffffff"} height={64} width={100} />
